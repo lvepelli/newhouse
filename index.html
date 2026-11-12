@@ -44,7 +44,7 @@ function installHouse(){
  for(const [x,z] of [[1.0,4.12],[2.18,4.18],[1.0,6.18],[2.62,7.2],[4.14,5.5],[4.08,7.8],[5.18,.9],[7.42,1.15],[5.16,3.4],[7.42,3.5],[5.22,5.37],[7.45,5.3],[5.33,7.08],[7.46,7.82]]){const fixture=new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,.025,16),new THREE.MeshBasicMaterial({color:0xfffdf3}));fixture.position.set(x,2.43,z);scene.add(fixture)}
  const doorMaterial=new THREE.MeshBasicMaterial({color:0xf4f3ef});const grooveMaterial=new THREE.MeshBasicMaterial({color:0x77736e});const handleMaterial=new THREE.MeshBasicMaterial({color:0x77736e});
  function openDoor(x,z,width,rotation){const group=new THREE.Group();group.position.set(x,0,z);group.rotation.y=rotation;const slab=new THREE.Mesh(new THREE.BoxGeometry(width,2.16,.065),doorMaterial);slab.position.set(width/2,1.08,0);group.add(slab);for(const y of [.66,1.10,1.54]){const groove=new THREE.Mesh(new THREE.BoxGeometry(width-.08,.014,.012),grooveMaterial);groove.position.set(width/2,y,-.038);group.add(groove)}const handle=new THREE.Mesh(new THREE.BoxGeometry(.045,.085,.13),handleMaterial);handle.position.set(width-.11,1.04,-.052);group.add(handle);scene.add(group)}
- openDoor(.03,3.60,.92,Math.PI/2); // puerta principal cerrada contra la pared de entrada
+ openDoor(.64,4.745,.92,0); // puerta principal cerrada en la pared detrás del inicio
  openDoor(3.68,4.78,.78,-Math.PI/2); // baño
  openDoor(2.66,4.78,.79,-Math.PI/2); // dormitorio principal
 
