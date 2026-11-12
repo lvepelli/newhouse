@@ -32,7 +32,7 @@ const houseFrame=document.getElementById('house-data');
 function installHouse(){
  const data=houseFrame.contentWindow.__paseoGeometry;
  if(!data){fail('No se pudo recuperar la geometría del paseo original.');return}
- houseSolids=data.solids.filter(s=>((s[1]+s[3])/2>=4.78);
+ houseSolids=data.solids.filter(s=>(s[1]+s[3])/2>=4.78);
  const vertices=data.world,position=[],normal=[],color=[];
  for(let i=0;i<vertices.length;i+=33){
    let cx=0,cz=0;for(let j=0;j<3;j++){cx+=vertices[i+j*11];cz+=vertices[i+j*11+2]}
