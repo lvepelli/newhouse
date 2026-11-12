@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Casa de Julia · paseo 3D continuo</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#171d20;color:#fff;font:14px system-ui,sans-serif}iframe{border:0;width:100%;height:100%}#open{position:fixed;right:18px;bottom:18px;z-index:20;background:#d8a3a4;color:#221a1b;border:0;border-radius:13px;padding:14px 18px;font-weight:800;cursor:pointer;box-shadow:0 8px 24px #0008}#room{display:none;position:fixed;inset:0;z-index:30;background:#121719}#view{width:100%;height:100%;display:block}#hud{position:absolute;top:12px;left:12px;right:12px;display:flex;gap:8px;align-items:center;pointer-events:none}#hud button,#hud span{pointer-events:auto;background:#172024e8;color:white;border:1px solid #ffffff55;border-radius:10px;padding:10px 12px}#hud button{cursor:pointer}#hint{position:absolute;bottom:15px;left:15px;background:#172024d9;padding:10px;border-radius:10px;font-size:12px}#error{display:none;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:#342a2a;padding:20px;border-radius:12px;max-width:420px}#touch{display:none;position:absolute;bottom:15px;right:15px;gap:8px}#touch button{font-size:20px;padding:14px;background:#172024dc;color:white;border:1px solid #fff8;border-radius:10px}@media(pointer:coarse){#touch{display:flex}#hint{bottom:88px}}
+</style></head><body>
+<iframe id="house-data" src="casa.html" hidden aria-hidden="true"></iframe><section id="room" aria-label="Paseo continuo por la casa" style="display:block"><canvas id="view"></canvas><div id="hud"><span>Casa de Julia · paseo 3D</span><button id="led">Apagar apliques</button></div><div id="hint">WASD para caminar · arrastra para mirar · Shift para ir más rápido · Sal de Julia por la puerta para explorar la casa</div><div id="error"></div><div id="touch"><button data-dir="left">←</button><button data-dir="forward">↑</button><button data-dir="backward">↓</button><button data-dir="right">→</button></div></section>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+const room=document.getElementById('room'), canvas=document.getElementById('view');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.68;
+const scene=new THREE.Scene();scene.background=new THREE.Color(0xe9d1c7);
+const camera=new THREE.PerspectiveCamera(74,1,.03,70);camera.position.set(1.43,1.64,2.83);
+scene.add(new THREE.HemisphereLight(0xfff7ef,0x8d7371,.60));
+const fill=new THREE.DirectionalLight(0xffe9d4,.42);fill.position.set(1.3,2.4,-3.1);scene.add(fill);
+let model=null,loaded=false,active=true,yaw=-.62,pitch=-.03,ledOn=true;const keys=new Set();const fixtureLights=[],obstacles=[];let houseSolids=[];
+const loader=new GLTFLoader();
+function fail(message){const el=document.getElementById('error');el.style.display='block';el.textContent=message}
+function load(){if(loaded)return;loaded=true;loader.load('assets/Julia_recorrido_web.glb',g=>{model=g.scene;model.position.z=3.5;scene.add(model);model.updateMatrixWorld(true);model.traverse(o=>{if(o.isLight){if(/LED/i.test(o.name)){fixtureLights.push(o);o.intensity=Math.min(o.intensity,1.2)}else o.visible=false}if(o.isMesh&&/Comoda blanca 3 filas|Armario corredero roble|Poste roble natural/i.test(o.name))obstacles.push(new THREE.Box3().setFromObject(o))});document.getElementById('error').style.display='none'},undefined,e=>fail('No se pudo abrir el modelo de Julia. Comprueba tu conexión a internet y vuelve a cargar la página. '+e.message))}
+document.getElementById('led').onclick=()=>{ledOn=!ledOn;for(const l of fixtureLights)l.visible=ledOn;document.getElementById('led').textContent=ledOn?'Apagar apliques':'Encender apliques'};
+// Reuse all the original house geometry, omitting only its old Julia furniture
+// and wall surfaces. Julia's Blender model occupies that exact room footprint.
+const houseFrame=document.getElementById('house-data');
+function installHouse(){
+ const data=houseFrame.contentWindow.__paseoGeometry;
+ if(!data){fail('No se pudo recuperar la geometría del paseo original.');return}
+ houseSolids=data.solids.filter(s=>!((s[0]+s[2])/2<2.68&&(s[1]+s[3])/2<3.5));
+ const vertices=data.world,position=[],normal=[],color=[];
+ for(let i=0;i<vertices.length;i+=33){
+   let cx=0,cz=0;for(let j=0;j<3;j++){cx+=vertices[i+j*11];cz+=vertices[i+j*11+2]}
+   if(cx/3<2.68&&cz/3<3.5)continue;
+   for(let j=0;j<3;j++){const k=i+j*11;position.push(vertices[k],vertices[k+1],vertices[k+2]);normal.push(vertices[k+3],vertices[k+4],vertices[k+5]);const linear=new THREE.Color().setRGB(vertices[k+6],vertices[k+7],vertices[k+8],THREE.SRGBColorSpace);color.push(linear.r,linear.g,linear.b)}
+ }
+ const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(position,3));geometry.setAttribute('normal',new THREE.Float32BufferAttribute(normal,3));geometry.setAttribute('color',new THREE.Float32BufferAttribute(color,3));
+ scene.add(new THREE.Mesh(geometry,new THREE.MeshBasicMaterial({vertexColors:true,side:THREE.DoubleSide})));
+ const roof=new THREE.Mesh(new THREE.BoxGeometry(8.35-2.68,.16,9.26),new THREE.MeshBasicMaterial({color:0xf2f1ed}));roof.position.set((8.35+2.68)/2,2.56,9.26/2);scene.add(roof);
+ const backRoof=new THREE.Mesh(new THREE.BoxGeometry(2.68,.16,9.26-3.5),new THREE.MeshBasicMaterial({color:0xf2f1ed}));backRoof.position.set(1.34,2.56,(9.26+3.5)/2);scene.add(backRoof);
+}
+if(houseFrame.contentWindow.__paseoGeometry)installHouse();else houseFrame.addEventListener('load',installHouse,{once:true});
+function resize(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}window.addEventListener('resize',resize);
+window.addEventListener('keydown',e=>keys.add(e.code));window.addEventListener('keyup',e=>keys.delete(e.code));
+let dragging=false,lx=0,ly=0;canvas.addEventListener('pointerdown',e=>{dragging=true;lx=e.clientX;ly=e.clientY;canvas.setPointerCapture(e.pointerId)});canvas.addEventListener('pointerup',()=>dragging=false);canvas.addEventListener('pointermove',e=>{if(!dragging)return;yaw-=(e.clientX-lx)*.004;pitch=Math.max(-1.1,Math.min(1.1,pitch-(e.clientY-ly)*.004));lx=e.clientX;ly=e.clientY});
+document.querySelectorAll('#touch button').forEach(b=>{b.addEventListener('pointerdown',e=>{e.preventDefault();keys.add(b.dataset.dir)});b.addEventListener('pointerup',()=>keys.delete(b.dataset.dir));b.addEventListener('pointercancel',()=>keys.delete(b.dataset.dir))});
+function valid(x,z){if(x<.18||x>8.17||z<.18||z>9.08)return false;if(z<3.5&&x<2.68){if(x>2.38)return false;return !obstacles.some(b=>x>b.min.x-.17&&x<b.max.x+.17&&z>b.min.z-.17&&z<b.max.z+.17)}return !houseSolids.some(s=>x+.17>s[0]&&x-.17<s[2]&&z+.17>s[1]&&z-.17<s[3])}
+const clock=new THREE.Clock();function frame(){requestAnimationFrame(frame);const dt=Math.min(clock.getDelta(),.05);const speed=(keys.has('ShiftLeft')?2.3:1.15)*dt;let f=Number(keys.has('KeyW')||keys.has('forward'))-Number(keys.has('KeyS')||keys.has('backward'));let s=Number(keys.has('KeyD')||keys.has('right'))-Number(keys.has('KeyA')||keys.has('left'));const length=Math.hypot(f,s)||1;f/=length;s/=length;const nx=camera.position.x+(-Math.sin(yaw)*f+Math.cos(yaw)*s)*speed,nz=camera.position.z+(-Math.cos(yaw)*f-Math.sin(yaw)*s)*speed;if(valid(nx,camera.position.z))camera.position.x=nx;if(valid(camera.position.x,nz))camera.position.z=nz;camera.rotation.order='YXZ';camera.rotation.y=yaw;camera.rotation.x=pitch;renderer.render(scene,camera)}resize();load();frame();
+</script></body></html>
