@@ -12,15 +12,15 @@ import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 const room=document.getElementById('room'), canvas=document.getElementById('view');
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.68;
 const scene=new THREE.Scene();scene.background=new THREE.Color(0xe9d1c7);
-const camera=new THREE.PerspectiveCamera(74,1,.03,70);camera.position.set(1.05,1.64,4.12);
+const camera=new THREE.PerspectiveCamera(74,1,.03,70);camera.position.set(1.05,1.64,.58);
 scene.add(new THREE.HemisphereLight(0xfff7ef,0x8d7371,.60));
 const fill=new THREE.DirectionalLight(0xffe9d4,.42);fill.position.set(1.3,2.4,-3.1);scene.add(fill);
-let model=null,loaded=false,yaw=0,pitch=-.03,ledOn=true,ceilingOn=false,houseMesh=null;const keys=new Set();const fixtureLights=[],ceilingLights=[],houseLights=[],obstacles=[];let houseSolids=[];
+let model=null,loaded=false,yaw=Math.PI,pitch=-.03,ledOn=true,ceilingOn=false,houseMesh=null;const keys=new Set();const fixtureLights=[],ceilingLights=[],houseLights=[],obstacles=[];let houseSolids=[];
 
 const loader=new GLTFLoader();
 document.getElementById('enter').addEventListener('click',()=>{document.getElementById('intro').style.display='none';canvas.focus()});document.getElementById('enter').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();document.getElementById('intro').style.display='none';canvas.focus()}});
 function fail(message){const el=document.getElementById('error');el.style.display='block';el.textContent=message}
-function load(){if(loaded)return;loaded=true;loader.load('assets/Julia_recorrido_web.glb',g=>{model=g.scene;model.position.z=3.5;scene.add(model);model.updateMatrixWorld(true);model.traverse(o=>{if(o.isLight){if(/LED/i.test(o.name)){fixtureLights.push(o);o.intensity=Math.min(o.intensity,1.2);o.visible=ledOn}else if(/Foco/i.test(o.name)){ceilingLights.push(o);o.color.set(0xf4f6ff);o.intensity=.65;o.visible=ceilingOn}else o.visible=false}if(o.isMesh){if(/Hoja puerta|Marco puerta/i.test(o.name)){o.visible=false}else if(/Tabique entrada|Dintel puerta|Pared trasera|Muro izquierdo/i.test(o.name)){o.material=new THREE.MeshBasicMaterial({color:0xd8c8b8,side:THREE.DoubleSide})}else{const materials=Array.isArray(o.material)?o.material:[o.material];for(const mat of materials){const name=mat?.name||'';if(name==='Pared rosa suave')mat.color?.set(0xe4b8bf);else if(name.includes('Papel nube'))mat.color?.set(0xe8bcc0);else if(name.includes('Techo blanco'))mat.color?.set(0xf5f2ec);if(mat)mat.roughness=.78}}if(/Comoda blanca 3 filas|Armario corredero roble|Poste roble natural/i.test(o.name))obstacles.push(new THREE.Box3().setFromObject(o))}});document.getElementById('error').style.display='none'},undefined,e=>fail('No se pudo abrir el modelo de la habitación. Comprueba tu conexión a internet y vuelve a cargar la página. '+e.message))}
+function load(){if(loaded)return;loaded=true;loader.load('assets/Julia_recorrido_web.glb',g=>{model=g.scene;model.position.z=3.5;scene.add(model);model.updateMatrixWorld(true);model.traverse(o=>{if(o.isLight){if(/LED/i.test(o.name)){fixtureLights.push(o);o.intensity=Math.min(o.intensity,1.2);o.visible=ledOn}else if(/Foco/i.test(o.name)){ceilingLights.push(o);o.color.set(0xf4f6ff);o.intensity=.65;o.visible=ceilingOn}else o.visible=false}if(o.isMesh){if(/puerta|marco/i.test(o.name)){o.visible=false}else if(/Tabique entrada|Dintel puerta|Pared trasera|Muro izquierdo/i.test(o.name)){o.material=new THREE.MeshBasicMaterial({color:0xd8c8b8,side:THREE.DoubleSide})}else{const materials=Array.isArray(o.material)?o.material:[o.material];for(const mat of materials){const name=mat?.name||'';if(name==='Pared rosa suave')mat.color?.set(0xe4b8bf);else if(name.includes('Papel nube'))mat.color?.set(0xe8bcc0);else if(name.includes('Techo blanco'))mat.color?.set(0xf5f2ec);if(mat)mat.roughness=.78}}if(/Comoda blanca 3 filas|Armario corredero roble|Poste roble natural/i.test(o.name))obstacles.push(new THREE.Box3().setFromObject(o))}});document.getElementById('error').style.display='none'},undefined,e=>fail('No se pudo abrir el modelo de la habitación. Comprueba tu conexión a internet y vuelve a cargar la página. '+e.message))}
 document.getElementById('led').onclick=()=>{ledOn=!ledOn;for(const l of fixtureLights)l.visible=ledOn;const button=document.getElementById('led');button.textContent=ledOn?'Apagar apliques':'Encender apliques';button.setAttribute('aria-pressed',String(ledOn))};
 document.getElementById('ceiling').onclick=()=>{ceilingOn=!ceilingOn;for(const l of ceilingLights)l.visible=ceilingOn;for(const l of houseLights)l.visible=ceilingOn;if(houseMesh)houseMesh.material=ceilingOn?houseDayMaterial:houseNightMaterial;const button=document.getElementById('ceiling');button.textContent=ceilingOn?'Apagar focos':'Encender focos';button.setAttribute('aria-pressed',String(ceilingOn))};
 const houseNightMaterial=new THREE.MeshBasicMaterial({vertexColors:true,side:THREE.DoubleSide});
@@ -31,11 +31,11 @@ const houseFrame=document.getElementById('house-data');
 function installHouse(){
  const data=houseFrame.contentWindow.__paseoGeometry;
  if(!data){fail('No se pudo recuperar la geometría del paseo original.');return}
- houseSolids=data.solids.filter(s=>!((s[0]+s[2])/2<2.68&&(s[1]+s[3])/2<3.5));
+ houseSolids=data.solids.filter(s=>!((s[0]+s[2])/2<2.80&&(s[1]+s[3])/2<3.70));
  const vertices=data.world,position=[],normal=[],color=[];
  for(let i=0;i<vertices.length;i+=33){
    let cx=0,cz=0;for(let j=0;j<3;j++){cx+=vertices[i+j*11];cz+=vertices[i+j*11+2]}
-   if(cx/3<2.68&&cz/3<3.5)continue;
+   if(cx/3<2.80&&cz/3<3.70)continue;
    for(let j=0;j<3;j++){const k=i+j*11;position.push(vertices[k],vertices[k+1],vertices[k+2]);normal.push(vertices[k+3],vertices[k+4],vertices[k+5]);const linear=new THREE.Color().setRGB(vertices[k+6],vertices[k+7],vertices[k+8],THREE.SRGBColorSpace);const shade=Math.max(.76,Math.min(1.05,.86+.08*vertices[k+3]+.06*vertices[k+5]+.13*vertices[k+4]));color.push(linear.r*shade,linear.g*shade,linear.b*shade)}
  }
  const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(position,3));geometry.setAttribute('normal',new THREE.Float32BufferAttribute(normal,3));geometry.setAttribute('color',new THREE.Float32BufferAttribute(color,3));
