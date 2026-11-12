@@ -6,7 +6,7 @@
 (function(){'use strict';
 const $=id=>document.getElementById(id),can=$('world');let started=false,topMode=false,lightOn=true,gl=null,program=null,ready=false,ctx2d=null,drag=false,lastDragX=0,lastDragY=0;
 const W=8.35,D=9.26,H=2.48,radius=.19,eyeY=1.64,START={x:1.05,z:4.12};let px=START.x,pz=START.z,yaw=-Math.PI/2,pitch=0;
-const keys=Object.create(null),solids=[],meshes={world:[],roof:[]},rgb={},objects=[];const c={wall:'#e8e5de',white:'#f6f3e9',oak:'#b68e63',oaklight:'#c7a77f',wood:'#c9aa83',floor:'#c6a482',pale:'#ded2c3',gray:'#97938d',dark:'#1b2224',pink:'#ebc8c2',pinkwall:'#edceca',marble:'#eeece7',sky:'#bedbe6',green:'#769078',carpet:'#dfd1be',oakdeep:'#8b6445',fabric:'#efe0ce',rose:'#dbaaa9',vein:'#ab9b93',bark:'#6b4d39',leaf:'#5e7759',brass:'#cfaa6b',glass:'#a7c9d0',stone:'#4d3e38',ivory:'#fff4e8',sofa:'#e7d9c9',black:'#141a1d',gold:'#f1c289',orange:'#f9ae46',silver:'#9ea4a3'};
+const keys=Object.create(null),solids=[],meshes={world:[],roof:[]},rgb={},objects=[];const c={wall:'#d8c8b8',white:'#f6f3e9',oak:'#b68e63',oaklight:'#c7a77f',wood:'#c9aa83',floor:'#c6a482',pale:'#ded2c3',gray:'#97938d',dark:'#1b2224',pink:'#ebc8c2',pinkwall:'#edceca',marble:'#eeece7',sky:'#bedbe6',green:'#769078',carpet:'#dfd1be',oakdeep:'#8b6445',fabric:'#efe0ce',rose:'#dbaaa9',vein:'#ab9b93',bark:'#6b4d39',leaf:'#5e7759',brass:'#cfaa6b',glass:'#a7c9d0',stone:'#4d3e38',ivory:'#fff4e8',sofa:'#e7d9c9',black:'#141a1d',gold:'#f1c289',orange:'#f9ae46',silver:'#9ea4a3'};
 function color(hex){if(!rgb[hex]){let s=hex.replace('#','');rgb[hex]=[0,2,4].map(i=>parseInt(s.slice(i,i+2),16)/255)}return rgb[hex]}
 function materialOf(col){if([c.oak,c.oaklight,c.wood,c.oakdeep,c.bark,c.brass].includes(col))return 1;
 if([c.marble,c.vein,c.stone].includes(col))return 2;
@@ -34,6 +34,12 @@ wZ(0,3.5,2.68,c.pinkwall);wX(0,1.83,3.5);wX(2.64,2.68,3.5);
 wX(0,2.65,4.78);wX(3.45,3.55,4.78);wZ(4.78,D,3.55);
 // Baño entre dormitorio y cocina, puerta junto al vestíbulo.
 wX(3.55,3.68,4.78);wX(4.45,4.83,4.78);wZ(4.78,8.78,4.83);wX(3.55,4.83,8.78);
+// Puertas blancas lisas con ranuras horizontales, siguiendo las referencias reales.
+function doorPanelZ(x,z,w){box(x,1.08,z,w,2.16,.065,c.white);for(const y of [.66,1.10,1.54])box(x,y,z-.036,w-.08,.014,.012,c.gray)}
+function doorPanelX(x,z,d){box(x,1.08,z,.065,2.16,d,c.white);for(const y of [.66,1.10,1.54])box(x-.036,y,z,.012,.014,d-.08,c.gray)}
+doorPanelX(.035,4.12,.90); // puerta principal del recibidor
+doorPanelZ(4.08,4.745,.78); // puerta del baño
+doorPanelZ(3.05,4.745,.80); // puerta del dormitorio principal
 // Rodapiés y marcos sencillos.
 function doorFrame(x,z,vert=false){if(vert){box(x,1.08,z,.07,2.16,.05,c.white)}else{box(x,1.08,z,.045,2.16,.07,c.white)}}doorFrame(.05,4.18,true);doorFrame(1.85,3.5);doorFrame(2.65,4.78);doorFrame(3.68,4.78);
 // Cielo exterior y luz por ventanas.
