@@ -47,6 +47,7 @@ function installHouse(){
  openDoor(.64,4.745,.92,0); // puerta principal cerrada en la pared detrás del inicio
  openDoor(3.68,4.78,.78,-Math.PI/2); // baño
  openDoor(2.66,4.78,.79,-Math.PI/2); // dormitorio principal
+ const entryTrimMaterial=new THREE.MeshBasicMaterial({color:0xd8c8b8});for(const [x,y,w,h] of [[.60,1.08,.08,2.16],[1.60,1.08,.08,2.16],[1.10,2.18,1.08,.08]]){const trim=new THREE.Mesh(new THREE.BoxGeometry(w,h,.09),entryTrimMaterial);trim.position.set(x,y,4.76);scene.add(trim)}
 
  const roof=new THREE.Mesh(new THREE.BoxGeometry(8.35-2.68,.16,9.26),new THREE.MeshBasicMaterial({color:0xf2f1ed}));roof.position.set((8.35+2.68)/2,2.56,9.26/2);scene.add(roof);
  const backRoof=new THREE.Mesh(new THREE.BoxGeometry(2.68,.16,9.26-3.5),new THREE.MeshBasicMaterial({color:0xf2f1ed}));backRoof.position.set(1.34,2.56,(9.26+3.5)/2);scene.add(backRoof);
