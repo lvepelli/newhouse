@@ -43,10 +43,22 @@ const spots=[[.8,1.2],[1.82,2.55],[1.0,4.12],[2.18,4.18],[.8,6.18],[2.62,7.2],[4
 for(const [x,z] of spots){cylinder(x,H-.048,z,.092,.012,'#f9f8ef',1,12);cylinder(x,H-.052,z,.063,.008,'#fff2cb',1.6,12)}
 // Dos fosos LED continuos sobre zona de sofá y pared TV, visibles desde abajo.
 box(2.81,H-.075,1.89,.07,.025,3.10,c.gold,2.6);box(7.96,H-.075,1.89,.07,.025,3.10,c.gold,2.6);
-// Salón: palillería vertical + TV + chimenea bajo TV.
-// Pared lisa beige en el paso del vestíbulo: se eliminan paneles, listones y acabados oscuros.
-// Sofá en L a la derecha: recorrido longitudinal de 3,20 m desde pared de fondo (z=0) hasta z=3,20. Se mantiene el resto del salón.
-furniture(7.55,.4,1.64,1.03,.77,3.12,c.sofa);furniture(6.68,.4,.93,2.08,.76,.84,c.sofa);furniture(7.91,.86,1.64,.32,.66,3.12,c.sofa,false);furniture(6.57,.88,.59,2.05,.60,.27,c.sofa,false);for(const z of [1.32,2.12,2.91])furniture(7.14,.81,z,.37,.19,.49,c.pale,false);furniture(5.52,.024,2.38,2.56,.038,2.32,c.carpet,false);cylinder(5.51,.35,2.39,.56,.48,c.oak,0,32);cylinder(5.51,.61,2.39,.58,.054,c.marble,0,32);
+// Salón realista según fotografías: pared de listones roble, LED cálido, TV, mueble bajo y chimenea.
+const salonOak='#a87345', salonOakDark='#765038', salonCream='#ded4c5', salonRug='#d8cbb7', salonStone='#45372e';
+box(2.78,1.32,1.90,.075,2.42,3.22,salonCream);
+for(let z=.34;z<3.48;z+=.105)box(2.735,1.34,z,.038,2.32,.048,salonOak);
+box(2.685,2.48,1.90,.026,.04,3.30,'#ffd39a',2.3);
+box(2.73,1.32,.28,.028,2.33,.038,'#ffd39a',1.2);
+furniture(3.04,.43,1.90,.50,.76,2.82,salonOak);
+for(const z of [.93,1.90,2.87])box(3.29,.43,z,.022,.62,.028,'#80543a');
+box(3.015,1.62,1.90,.055,1.08,1.75,c.black);
+box(3.058,.48,1.90,.050,.27,1.48,'#181515');
+box(3.082,.48,1.90,.018,.13,1.28,'#f17727',3.0);
+for(let z=1.33;z<2.49;z+=.13)box(3.10,.52,z,.025,.05,.022,'#f6a63f',2.6);
+cylinderVertical(2.74,.93,.62,.07,.24,'#e7e0d6');box(2.74,1.12,.62,.10,.03,.11,'#708268');
+cylinderVertical(2.73,.92,3.12,.06,.20,'#e7e0d6');box(2.73,1.08,3.12,.10,.03,.11,'#708268');
+// Sofá en L crema, alfombra espesa y mesa redonda de roble con sobre de piedra oscura.
+furniture(7.55,.4,1.64,1.03,.77,3.12,c.sofa);furniture(6.68,.4,.93,2.08,.76,.84,c.sofa);furniture(7.91,.86,1.64,.32,.66,3.12,c.sofa,false);furniture(6.57,.88,.59,2.05,.60,.27,c.sofa,false);for(const z of [1.32,2.12,2.91])furniture(7.14,.81,z,.37,.19,.49,c.pale,false);furniture(5.52,.024,2.38,2.56,.038,2.32,c.carpet,false);cylinder(5.51,.35,2.39,.56,.48,salonOakDark,0,40);cylinder(5.51,.61,2.39,.58,.054,salonStone,0,40);cylinder(5.51,.675,2.39,.15,.08,'#f1c289',1.8,20);
 // Comedor: 2,50 m longitudinales entre z=3,20 y z=5,70. Mesa de 0,80 m de anchura contra pared derecha.
 furniture(7.92,.76,4.45,.80,.09,1.40,c.white);for(const z of [4.10,4.85])furniture(7.10,.34,z,.35,.61,.31,c.pale);for(const z of [3.45,5.45])furniture(7.92,.34,z,.35,.61,.31,c.pale);
 // Cocina: tramo longitudinal z=5,70..9,26 (3,56 m). Frentes invertidos según referencia. Barra al inicio junto a mesa.
