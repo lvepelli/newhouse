@@ -36,11 +36,11 @@ function installHouse(){
  for(let i=0;i<vertices.length;i+=33){
    let cx=0,cz=0;for(let j=0;j<3;j++){cx+=vertices[i+j*11];cz+=vertices[i+j*11+2]}
    if(cx/3<2.68&&cz/3<3.5)continue;
-   for(let j=0;j<3;j++){const k=i+j*11;position.push(vertices[k],vertices[k+1],vertices[k+2]);normal.push(vertices[k+3],vertices[k+4],vertices[k+5]);const linear=new THREE.Color().setRGB(vertices[k+6],vertices[k+7],vertices[k+8],THREE.SRGBColorSpace);const shade=Math.max(.76,Math.min(1.05,.86+.08*vertices[k+3]+.06*vertices[k+5]+.13*vertices[k+4]));if(vertices[k+10]===6){linear.r*=.91;linear.g*=.82;linear.b*=.72}color.push(linear.r*shade,linear.g*shade,linear.b*shade)}
+   for(let j=0;j<3;j++){const k=i+j*11;position.push(vertices[k],vertices[k+1],vertices[k+2]);normal.push(vertices[k+3],vertices[k+4],vertices[k+5]);const linear=new THREE.Color().setRGB(vertices[k+6],vertices[k+7],vertices[k+8],THREE.SRGBColorSpace);const shade=Math.max(.76,Math.min(1.05,.86+.08*vertices[k+3]+.06*vertices[k+5]+.13*vertices[k+4]));color.push(linear.r*shade,linear.g*shade,linear.b*shade)}
  }
  const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(position,3));geometry.setAttribute('normal',new THREE.Float32BufferAttribute(normal,3));geometry.setAttribute('color',new THREE.Float32BufferAttribute(color,3));
  houseMesh=new THREE.Mesh(geometry,ceilingOn?houseDayMaterial:houseNightMaterial);scene.add(houseMesh);
- for(const [x,z] of [[1.2,4.2],[2.9,4.2],[1.8,6.5],[4.2,6.5],[6.1,1.7],[7.3,3.8],[6.4,6.4],[6.5,8.3]]){const light=new THREE.PointLight(0xf4f6ff,3,4.2,2);light.position.set(x,2.27,z);light.visible=ceilingOn;scene.add(light);houseLights.push(light)}
+ for(const [x,z] of [[1.2,4.2],[2.9,4.2],[1.8,6.5],[4.2,6.5],[6.1,1.7],[7.3,3.8],[6.4,6.4],[6.5,8.3]]){const light=new THREE.PointLight(0xf4f6ff,3,4.2,2);light.position.set(x,2.27,z);light.visible=ceilingOn;scene.add(light);houseLights.push(light)}\n for(const [x,z] of [[1.0,4.12],[2.18,4.18],[1.0,6.18],[2.62,7.2],[4.14,5.5],[4.08,7.8],[5.18,.9],[7.42,1.15],[5.16,3.4],[7.42,3.5],[5.22,5.37],[7.45,5.3],[5.33,7.08],[7.46,7.82]]){const fixture=new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,.025,16),new THREE.MeshBasicMaterial({color:0xfffdf3}));fixture.position.set(x,2.43,z);scene.add(fixture)}
  const roof=new THREE.Mesh(new THREE.BoxGeometry(8.35-2.68,.16,9.26),new THREE.MeshBasicMaterial({color:0xf2f1ed}));roof.position.set((8.35+2.68)/2,2.56,9.26/2);scene.add(roof);
  const backRoof=new THREE.Mesh(new THREE.BoxGeometry(2.68,.16,9.26-3.5),new THREE.MeshBasicMaterial({color:0xf2f1ed}));backRoof.position.set(1.34,2.56,(9.26+3.5)/2);scene.add(backRoof);
 }
