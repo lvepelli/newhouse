@@ -12,7 +12,7 @@ import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 const room=document.getElementById('room'), canvas=document.getElementById('view');
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.68;
 const scene=new THREE.Scene();scene.background=new THREE.Color(0xe9d1c7);
-const camera=new THREE.PerspectiveCamera(74,1,.03,70);camera.position.set(2.06,1.64,4.12);
+const camera=new THREE.PerspectiveCamera(74,1,.03,70);camera.position.set(2.06,1.64,4.12);window.__paseoDebug={scene,camera};
 scene.add(new THREE.HemisphereLight(0xfff7ef,0x8d7371,.60));
 const fill=new THREE.DirectionalLight(0xffe9d4,.42);fill.position.set(1.3,2.4,-3.1);scene.add(fill);
 let model=null,loaded=false,yaw=0,pitch=-.03,ledOn=true,ceilingOn=false,houseMesh=null;const keys=new Set();const fixtureLights=[],ceilingLights=[],houseLights=[],obstacles=[];let houseSolids=[];
