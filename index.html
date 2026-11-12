@@ -12,7 +12,7 @@ import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 const room=document.getElementById('room'), canvas=document.getElementById('view');
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.68;
 const scene=new THREE.Scene();scene.background=new THREE.Color(0xe9d1c7);
-const camera=new THREE.PerspectiveCamera(74,1,.03,70);camera.position.set(1.05,1.64,4.12);
+const camera=new THREE.PerspectiveCamera(74,1,.03,70);camera.position.set(2.06,1.64,4.12);
 scene.add(new THREE.HemisphereLight(0xfff7ef,0x8d7371,.60));
 const fill=new THREE.DirectionalLight(0xffe9d4,.42);fill.position.set(1.3,2.4,-3.1);scene.add(fill);
 let model=null,loaded=false,yaw=0,pitch=-.03,ledOn=true,ceilingOn=false,houseMesh=null;const keys=new Set();const fixtureLights=[],ceilingLights=[],houseLights=[],obstacles=[];let houseSolids=[];
@@ -44,10 +44,6 @@ function installHouse(){
  for(const [x,z] of [[1.0,4.12],[2.18,4.18],[1.0,6.18],[2.62,7.2],[4.14,5.5],[4.08,7.8],[5.18,.9],[7.42,1.15],[5.16,3.4],[7.42,3.5],[5.22,5.37],[7.45,5.3],[5.33,7.08],[7.46,7.82]]){const fixture=new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,.025,16),new THREE.MeshBasicMaterial({color:0xfffdf3}));fixture.position.set(x,2.43,z);scene.add(fixture)}
  const doorMaterial=new THREE.MeshBasicMaterial({color:0xf4f3ef});const grooveMaterial=new THREE.MeshBasicMaterial({color:0x77736e});const handleMaterial=new THREE.MeshBasicMaterial({color:0x77736e});
  function openDoor(x,z,width,rotation){const group=new THREE.Group();group.position.set(x,0,z);group.rotation.y=rotation;const slab=new THREE.Mesh(new THREE.BoxGeometry(width,2.16,.065),doorMaterial);slab.position.set(width/2,1.08,0);group.add(slab);for(const y of [.48,.88,1.28,1.68]){const groove=new THREE.Mesh(new THREE.BoxGeometry(width-.08,.014,.012),grooveMaterial);groove.position.set(width/2,y,-.038);group.add(groove)}const handle=new THREE.Mesh(new THREE.BoxGeometry(.045,.085,.13),handleMaterial);handle.position.set(width-.11,1.04,-.052);group.add(handle);scene.add(group)}
- const beigeWallMaterial=new THREE.MeshBasicMaterial({color:0xd8c8b8});
- for(const [x,y,w,h] of [[.42,1.24,.84,2.48],[2.265,1.24,.83,2.48],[1.34,2.34,1.02,.28]]){const panel=new THREE.Mesh(new THREE.BoxGeometry(w,h,.055),beigeWallMaterial);panel.position.set(x,y,.015);scene.add(panel)}
- openDoor(.88,.085,.92,0); // puerta principal blanca cerrada y visible en el muro del fondo
- const whiteTrimMaterial=new THREE.MeshBasicMaterial({color:0xf4f3ef});for(const [x,y,w,h] of [[.83,1.08,.08,2.16],[1.85,1.08,.08,2.16],[1.34,2.18,1.10,.08]]){const trim=new THREE.Mesh(new THREE.BoxGeometry(w,h,.09),whiteTrimMaterial);trim.position.set(x,y,.075);scene.add(trim)}
  const juliaTrimMaterial=new THREE.MeshBasicMaterial({color:0xd8c8b8});for(const [x,y,w,h] of [[1.60,1.08,.14,2.16],[2.52,1.08,.14,2.16],[2.06,2.18,1.06,.14]]){const trim=new THREE.Mesh(new THREE.BoxGeometry(w,h,.10),juliaTrimMaterial);trim.position.set(x,y,3.58);scene.add(trim)}
 
  const roof=new THREE.Mesh(new THREE.BoxGeometry(8.35-2.68,.16,9.26),new THREE.MeshBasicMaterial({color:0xf2f1ed}));roof.position.set((8.35+2.68)/2,2.56,9.26/2);scene.add(roof);
