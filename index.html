@@ -32,7 +32,7 @@ function installHouse(){
  for(let i=0;i<vertices.length;i+=33){
    let cx=0,cz=0;for(let j=0;j<3;j++){cx+=vertices[i+j*11];cz+=vertices[i+j*11+2]}
    if(cx/3<2.68&&cz/3<3.5)continue;
-   for(let j=0;j<3;j++){const k=i+j*11;position.push(vertices[k],vertices[k+1],vertices[k+2]);normal.push(vertices[k+3],vertices[k+4],vertices[k+5]);const linear=new THREE.Color().setRGB(vertices[k+6],vertices[k+7],vertices[k+8],THREE.SRGBColorSpace);color.push(linear.r,linear.g,linear.b)}
+   for(let j=0;j<3;j++){const k=i+j*11;position.push(vertices[k],vertices[k+1],vertices[k+2]);normal.push(vertices[k+3],vertices[k+4],vertices[k+5]);const linear=new THREE.Color().setRGB(vertices[k+6],vertices[k+7],vertices[k+8],THREE.SRGBColorSpace);const shade=Math.max(.76,Math.min(1.05,.86+.08*vertices[k+3]+.06*vertices[k+5]+.13*vertices[k+4]));if(vertices[k+10]===6){linear.r*=.91;linear.g*=.82;linear.b*=.72}color.push(linear.r*shade,linear.g*shade,linear.b*shade)}
  }
  const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(position,3));geometry.setAttribute('normal',new THREE.Float32BufferAttribute(normal,3));geometry.setAttribute('color',new THREE.Float32BufferAttribute(color,3));
  scene.add(new THREE.Mesh(geometry,new THREE.MeshBasicMaterial({vertexColors:true,side:THREE.DoubleSide})));
